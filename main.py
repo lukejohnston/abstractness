@@ -50,10 +50,12 @@ class WikiAbstractness(webapp.RequestHandler):
         name = self.request.get('article')
         count = 0
         names = []
+        loop = False
         
         while(name != "Philosophy"):
             if name in names:
-                names.append("Loop detected!")
+                names.append(name)
+                loop = True
                 break
             names.append(name)
             nextname = get_from_db(name)
@@ -65,7 +67,8 @@ class WikiAbstractness(webapp.RequestHandler):
 
         template_values = {
             'names' : names,
-            'count' : count
+            'count' : count,
+            'loop' : loop
         }
 
         path = os.path.join(os.path.dirname(__file__), 'get.html')

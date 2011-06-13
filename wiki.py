@@ -66,6 +66,8 @@ def find_next_article(name):
                     continue
                 elif j.parent.name == 'i':
                     continue
+                elif j.parent.name == 'span':
+                    continue
                 #elif j.get('class'):
                     #print "Rejected for class"
                 #    continue

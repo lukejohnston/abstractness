@@ -4,7 +4,14 @@
         {% for name in names %}
         {{ name }} --&gt
         {% endfor %}
-        Philosophy</p>
+        {% if not loop %}
+        Philosophy
+        {% endif %}
+        </p>
+        {% if loop %}
+        <p>Loop detected!</p>
+        {% else %}
         <p><b>Got to philosophy in {{ count }} steps</b></p>
+        {% endif %}
     </body>
 </html>
