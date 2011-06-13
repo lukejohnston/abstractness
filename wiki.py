@@ -31,36 +31,46 @@ def find_next_article(name):
     while True:
         if count >= len(sibs):
             links = comment.findAllNext('a')
-            opens = comment.findAllPrevious(text=re.compile("\("))
-            closes = comment.findAllPrevious(text=re.compile("\)"))
+            #opens = len(comment.findAllPrevious(text=re.compile("\(")))
+            #closes = len(comment.findAllPrevious(text=re.compile("\)")))
         else:
             links = sibs[count].findAll('a')
-            opens = sibs[count].findAllPrevious(text=re.compile("\("))
-            closes = sibs[count].findAllPrevious(text=re.compile("\)"))
+            #opens = len(sibs[count].findAllPrevious(text=re.compile("\(")))
+            #closes = len(sibs[count].findAllPrevious(text=re.compile("\)")))
+            #print sibs[count].contents
         count += 1
         done = False
         if links:
             for j in links:
-                print j
-                opens = len(j.findAllPrevious(text=re.compile("\("))) 
-                print "%d open brackets before" % opens
-                closes = len(j.findAllPrevious(text=re.compile("\)"))) 
-                print "%d close brackets before" % closes
+                #print j
+                jopens = j.findAllPrevious(text=re.compile("\("))
+                #print jopens
+                jcloses = j.findAllPrevious(text=re.compile("\)"))
+                #print jcloses
+                opencounts = [str(i).count("(") for i in jopens]
+                closecounts = [str(i).count(")") for i in jcloses]
+                opentotal = sum(opencounts)
+                closetotal = sum(closecounts)
+                #print "%d opens and %d closes" % (opentotal, closetotal)
                 if "Wikipedia:" in j['href']:
+                    #print "Rejected for wikipedia"
                     continue
                 elif "cite_note" in j['href']:
+                    #print "Rejected for cite note"
                     continue
                 elif "Wiktionary" in j['href']:
+                    #print "rejected for wktionary"
                     continue
                 elif not j['href'].startswith(url_prefix):
+                    #print "Rejected for bad prefix"
                     continue
-                elif j.get('class'):
+                elif j.parent.name == 'i':
                     continue
-                elif not j.findPrevious(text=re.compile("\(")):
-                    done = True
-                    break
-                elif (len(j.findAllPrevious(text=re.compile("\("))) - opens) ==\
-                    (len(j.findAllPrevious(text=re.compile("\)"))) - closes):
+                #elif j.get('class'):
+                    #print "Rejected for class"
+                #    continue
+                elif opentotal == closetotal:
+                    #print "Accepted for balanced brackets"
                     done = True
                     break
         if done:
