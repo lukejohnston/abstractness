@@ -2,12 +2,9 @@
     <title>Abstractness</title>
     <body>
         <div><h2>Find out the abstractness of something!</h2></div>
-        <div>Inspired by xkcd, abstractness is defined as the number of
+        <p>Inspired by xkcd, abstractness is defined as the number of
             clicks it take to get from a wikipedia article to Philosophy. The
-            fewer steps, the more abstract it is! </br></div>
-        <form action="/get" method="post">
-            <div>http://en.wikipedia.org/wiki/<input type="text" name="article"
-                size="40" /><input type="submit" value="Calculate" /></div>
-        </form>
+            fewer steps, the more abstract it is! </p>
+        {% include 'form.html' %}
     </body>
 </html>
