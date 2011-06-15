@@ -4,12 +4,15 @@
         {% for name in names %}
         {{ name }} --&gt
         {% endfor %}
-        {% if not loop %}
+        {% if not loop and not notFound %}
         Philosophy
         {% endif %}
         </p>
         {% if loop %}
         <p>Loop detected!</p>
+        {% endif %}
+        {% if notFound %}
+        <p>Couldn't find a page in Wikipedia with that name.</p>
         {% else %}
         <p><b>Got to philosophy in {{ count }} steps</b></p>
         {% endif %}

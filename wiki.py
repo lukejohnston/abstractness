@@ -12,6 +12,13 @@ else:
     url_prefix = "/wiki"
 agent = "Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20110506 Firefox/4.0.1"
 
+class NotFoundException(Exception):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return "Page not found: " + self.name
+
 def find_next_article(name):
     if __name__=="__main__":
         url = "https://secure.wikimedia.org/wikipedia/en/wiki/" + name
@@ -22,6 +29,9 @@ def find_next_article(name):
         res = fetch(url, headers={'UserAgent' : agent})
         html = res.content
     soup = BeautifulSoup(html)
+
+    if "Wikipedia does not have an article with this exact name" in str(soup):
+        raise NotFoundException(name)
 
     comment = soup.find(text=re.compile("bodytext"))
     sibs = comment.findNextSiblings('p')

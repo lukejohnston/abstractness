@@ -21,6 +21,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 from wiki import find_next_article
+from wiki import NotFoundException
 
 
 class MainHandler(webapp.RequestHandler):
@@ -51,6 +52,7 @@ class WikiAbstractness(webapp.RequestHandler):
         count = 0
         names = []
         loop = False
+        notFound = False
         
         while(name != "Philosophy"):
             if name in names:
@@ -60,15 +62,20 @@ class WikiAbstractness(webapp.RequestHandler):
             names.append(name)
             nextname = get_from_db(name)
             if not nextname:
-                nextname = find_next_article(name)
-                put_in_db(name, nextname)
+                try:
+                    nextname = find_next_article(name)
+                    put_in_db(name, nextname)
+                except NotFoundException:
+                    notFound = True
+                    break
             count += 1
             name = nextname
 
         template_values = {
             'names' : names,
             'count' : count,
-            'loop' : loop
+            'loop' : loop,
+            'notFound': notFound
         }
 
         path = os.path.join(os.path.dirname(__file__), 'get.html')
