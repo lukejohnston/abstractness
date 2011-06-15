@@ -13,7 +13,8 @@
         {% endif %}
         {% if notFound %}
         <p>Couldn't find a page in Wikipedia with that name.</p>
-        {% else %}
+        {% endif %}
+        {% if not loop and not notFound %}
         <p><b>Got to philosophy in {{ count }} steps</b></p>
         {% endif %}
         <p>Another?</p>
