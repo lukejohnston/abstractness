@@ -2,10 +2,10 @@
     <body>
         <p>
         {% for name in names %}
-        {{ name }} --&gt
+        <a href="http://en.wikipedia.org/wiki/{{ name }}" >{{ name }}</a> --&gt
         {% endfor %}
         {% if not loop and not notFound %}
-        Philosophy
+        <a href="http://en.wikipedia.org/wiki/Philosophy" >Philosophy</a>
         {% endif %}
         </p>
         {% if loop %}
