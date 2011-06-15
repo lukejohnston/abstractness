@@ -25,23 +25,30 @@ from wiki import NotFoundException
 
 
 class MainHandler(webapp.RequestHandler):
+    """Serve the front page, could probably make this static"""
     def get(self):
         path = os.path.join(os.path.dirname(__file__), 'index.html')
         self.response.out.write(template.render(path, {}))
 
 class Article(db.Model):
+    """Store the links in the chain. The key is the name of the article and
+    nextArticle is the name of the first link
+    """
     nextArticle = db.StringProperty()
 
 def article_key(article):
+    """Return the db key from the name article"""
     return db.Key.from_path('Article', article)
 
 def get_from_db(name):
+    """Return the nextArticle associated with that name or None if not found"""
     articles = Article.gql("WHERE ANCESTOR IS :1", article_key(name))
     result = articles.get()
     if result:
         return result.nextArticle
 
 def put_in_db(name, nextname):
+    """Store the name, nextName pair in the db"""
     article = Article(parent=article_key(name))
     article.nextArticle = nextname
     article.put()
