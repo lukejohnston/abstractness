@@ -61,6 +61,8 @@ def find_next_article(name):
                 elif "Wiktionary" in j['href']:
                     #print "rejected for wktionary"
                     continue
+                elif "File:" in j['href']:
+                    continue
                 elif not j['href'].startswith(url_prefix):
                     #print "Rejected for bad prefix"
                     continue
