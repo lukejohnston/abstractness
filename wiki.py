@@ -12,6 +12,10 @@ else:
     url_prefix = "/wiki"
 agent = "Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20110506 Firefox/4.0.1"
 
+reBodytext = re.compile("bodytext")
+reOpenPar = re.compile("\(")
+reClosePar = re.compile("\)")
+
 class NotFoundException(Exception):
     def __init__(self, name):
         self.name = name
@@ -33,7 +37,7 @@ def find_next_article(name):
     if "Wikipedia does not have an article with this exact name" in str(soup):
         raise NotFoundException(name)
 
-    comment = soup.find(text=re.compile("bodytext"))
+    comment = soup.find(text=reBodytext)
     sibs = comment.findNextSiblings('p')
     count = 0
     links = None
@@ -53,9 +57,9 @@ def find_next_article(name):
         if links:
             for j in links:
                 #print j
-                jopens = j.findAllPrevious(text=re.compile("\("))
+                jopens = j.findAllPrevious(text=reOpenPar)
                 #print jopens
-                jcloses = j.findAllPrevious(text=re.compile("\)"))
+                jcloses = j.findAllPrevious(text=reClosePar)
                 #print jcloses
                 opencounts = [str(i).count("(") for i in jopens]
                 closecounts = [str(i).count(")") for i in jcloses]
