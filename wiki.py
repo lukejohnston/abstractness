@@ -45,50 +45,34 @@ def find_next_article(name):
     while True:
         if count >= len(sibs):
             links = comment.findAllNext('a')
-            #opens = len(comment.findAllPrevious(text=re.compile("\(")))
-            #closes = len(comment.findAllPrevious(text=re.compile("\)")))
         else:
             links = sibs[count].findAll('a')
-            #opens = len(sibs[count].findAllPrevious(text=re.compile("\(")))
-            #closes = len(sibs[count].findAllPrevious(text=re.compile("\)")))
-            #print sibs[count].contents
         count += 1
         done = False
         if links:
             for j in links:
-                #print j
                 jopens = j.findAllPrevious(text=reOpenPar)
-                #print jopens
                 jcloses = j.findAllPrevious(text=reClosePar)
-                #print jcloses
                 opencounts = [str(i).count("(") for i in jopens]
                 closecounts = [str(i).count(")") for i in jcloses]
                 opentotal = sum(opencounts)
                 closetotal = sum(closecounts)
-                #print "%d opens and %d closes" % (opentotal, closetotal)
+
                 if "Wikipedia:" in j['href']:
-                    #print "Rejected for wikipedia"
                     continue
                 elif "cite_note" in j['href']:
-                    #print "Rejected for cite note"
                     continue
                 elif "Wiktionary" in j['href']:
-                    #print "rejected for wktionary"
                     continue
                 elif "File:" in j['href']:
                     continue
                 elif not j['href'].startswith(url_prefix):
-                    #print "Rejected for bad prefix"
                     continue
                 elif j.parent.name == 'i':
                     continue
                 elif j.parent.name == 'span':
                     continue
-                #elif j.get('class'):
-                    #print "Rejected for class"
-                #    continue
                 elif opentotal == closetotal:
-                    #print "Accepted for balanced brackets"
                     done = True
                     break
         if done:
