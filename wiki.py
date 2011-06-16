@@ -6,6 +6,7 @@ if __name__=="__main__":
     import urllib2
 else:
     from google.appengine.api.urlfetch import fetch
+    from google.appengine.api.urlfetch import DownloadError
 import sys
 import re
 
@@ -62,6 +63,8 @@ def find_next_article(name):
     else:
         url = "http://en.wikipedia.org/wiki/" + name
         res = fetch(url, headers={'UserAgent' : agent})
+        if res.status_code > 400:
+            raise DownloadError()
         html = res.content
     soup = BeautifulSoup(html)
 

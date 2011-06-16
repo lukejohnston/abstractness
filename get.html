@@ -5,7 +5,7 @@
         {% for name in names %}
         <a href="http://en.wikipedia.org/wiki/{{ name }}" >{{ name }}</a> --&gt
         {% endfor %}
-        {% if not loop and not notFound %}
+        {% if not loop and not notFound and not error %}
         <a href="http://en.wikipedia.org/wiki/Philosophy" >Philosophy</a>
         {% endif %}
         </p>
@@ -15,12 +15,16 @@
         {% if notFound %}
         <p>Couldn't find a page in Wikipedia with that name.</p>
         {% endif %}
-        {% if not loop and not notFound %}
+        {% if error %}
+        <p>Something went wrong while getting pages from Wikipedia. Try again
+        later.</p>
+        {% endif %}
+        {% if not loop and not notFound and not error %}
         <p><b>Got to philosophy in {{ count }} steps</b></p>
         {% endif %}
         <p>Another?</p>
         {% include 'form.html' %}
         <p><small>Note: Wikipedia changes often. What this returns might not
-            match the current articles exactly</small></p>
+            match the current articles exactly.</small></p>
     </body>
 </html>

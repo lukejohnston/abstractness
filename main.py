@@ -20,6 +20,8 @@ from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
+from google.appengine.api.urlfetch import InvalidURLError
+from google.appengine.api.urlfetch import DownloadError
 from wiki import find_next_article
 from wiki import NotFoundException
 
@@ -63,6 +65,7 @@ class WikiAbstractness(webapp.RequestHandler):
         names = []
         loop = False
         notFound = False
+        error = False
 
         name = name.replace(" ", "_")
         
@@ -80,6 +83,12 @@ class WikiAbstractness(webapp.RequestHandler):
                 except NotFoundException:
                     notFound = True
                     break
+                except InvalidURLError:
+                    notFound = True
+                    break
+                except DownloadError:
+                    error = True
+                    break
             count += 1
             name = nextname
 
@@ -87,7 +96,8 @@ class WikiAbstractness(webapp.RequestHandler):
             'names' : names,
             'count' : count,
             'loop' : loop,
-            'notFound': notFound
+            'notFound': notFound,
+            'error' : error
         }
 
         path = os.path.join(os.path.dirname(__file__), 'get.html')
