@@ -24,6 +24,7 @@ from google.appengine.api.urlfetch import InvalidURLError
 from google.appengine.api.urlfetch import DownloadError
 from wiki import find_next_article
 from wiki import NotFoundException
+from wiki import NoLinksException
 
 
 class MainHandler(webapp.RequestHandler):
@@ -87,6 +88,9 @@ class WikiAbstractness(webapp.RequestHandler):
                     notFound = True
                     break
                 except DownloadError:
+                    error = True
+                    break
+                except NoLinksException:
                     error = True
                     break
             count += 1

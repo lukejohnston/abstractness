@@ -29,18 +29,27 @@ class NotFoundException(Exception):
     def __str__(self):
         return "Page not found: " + self.name
 
+class NoLinksException(Exception):
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return "No links found on page: " + self.name
+
 def valid_link(j):
     """Returns True if j is the type of link we're looking for"""
 
-    if "Wikipedia:" in j['href']:
+    if not j.get('href'):
         return False
-    elif "cite_note" in j['href']:
+    elif "Wikipedia:" in j.get('href', ''):
         return False
-    elif "Wiktionary" in j['href']:
+    elif "cite_note" in j.get('href', ''):
         return False
-    elif "File:" in j['href']:
+    elif "Wiktionary" in j.get('href', ''):
         return False
-    elif not j['href'].startswith(url_prefix):
+    elif "File:" in j.get('href', ''):
+        return False
+    elif not j.get('href', '').startswith(url_prefix):
         return False
     elif j.parent.name == 'i':
         return False
@@ -86,12 +95,14 @@ def find_next_article(name):
         else:
             links = sibs[count].findAll('a')
 
-        count += 1
-
         if not links:
+            count += 1
             continue
 
         for j in links:
+            if not valid_link(j):
+                continue
+
             #Check that the brackets are balanced
             jopens = j.findAllPrevious(text=reOpenPar)
             jcloses = j.findAllPrevious(text=reClosePar)
@@ -100,8 +111,13 @@ def find_next_article(name):
             opentotal = sum(opencounts)
             closetotal = sum(closecounts)
 
-            if valid_link(j) and opentotal == closetotal:
+            if opentotal == closetotal:
                 return j['href'].split("/")[-1]
+
+        if count >= len(sibs):
+            raise NoLinksException(name)
+
+        count += 1
 
 if __name__=="__main__":
     name = sys.argv[1]
