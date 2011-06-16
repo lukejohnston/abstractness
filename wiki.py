@@ -72,14 +72,12 @@ def find_next_article(name):
     else:
         url = "http://en.wikipedia.org/wiki/" + name
         res = fetch(url, headers={'UserAgent' : agent})
-        if res.status_code > 400:
+        if res.status_code == 404:
+            raise NotFoundException(name)
+        elif res.status_code > 400:
             raise DownloadError()
         html = res.content
     soup = BeautifulSoup(html)
-
-    #Not a real page
-    if "Wikipedia does not have an article with this exact name" in str(soup):
-        raise NotFoundException(name)
 
     #Start our search at the start of the body text
     comment = soup.find(text=reBodytext)
