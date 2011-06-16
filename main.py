@@ -63,6 +63,8 @@ class WikiAbstractness(webapp.RequestHandler):
         names = []
         loop = False
         notFound = False
+
+        name = name.replace(" ", "_")
         
         while(name != "Philosophy"):
             if name in names:
