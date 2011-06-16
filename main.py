@@ -54,7 +54,7 @@ def put_in_db(name, nextname):
     article.put()
 
 class WikiAbstractness(webapp.RequestHandler):
-    def post(self):
+    def get(self):
         name = self.request.get('article')
         if not name:
             self.redirect("/")
