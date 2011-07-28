@@ -16,6 +16,7 @@
 #
 import cgi
 import os
+import logging
 from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -48,7 +49,10 @@ def get_from_db(name):
     articles = Article.gql("WHERE ANCESTOR IS :1", article_key(name))
     result = articles.get()
     if result:
+        logging.info("Cache hit for %s", name)
         return result.nextArticle
+    else:
+        logging.info("Cache miss for %s", name)
 
 def put_in_db(name, nextname):
     """Store the name, nextName pair in the db"""
@@ -74,6 +78,7 @@ class WikiAbstractness(webapp.RequestHandler):
             if name in names:
                 names.append(name)
                 loop = True
+                logging.info("Loop detected for %s", names[0])
                 break
             names.append(name)
             nextname = get_from_db(name)
@@ -83,18 +88,29 @@ class WikiAbstractness(webapp.RequestHandler):
                     put_in_db(name, nextname)
                 except NotFoundException:
                     notFound = True
+                    logging.info("%s was not found in a search for %s", name,
+                                names[0])
                     break
                 except InvalidURLError:
                     notFound = True
+                    logging.info("%s was not found in a search for %s", name,
+                                names[0])
                     break
                 except DownloadError:
                     error = True
+                    logging.error("Error downloading %s in a search for %s", 
+                                  name, names[0])
                     break
                 except NoLinksException:
                     error = True
+                    logging.info("No links on %s in a search for %s", name,
+                                names[0])
                     break
             count += 1
             name = nextname
+
+        if not error or not notFound or not loop:
+            logging.info("%s has %d steps", names[0], count)
 
         template_values = {
             'names' : names,
@@ -108,9 +124,10 @@ class WikiAbstractness(webapp.RequestHandler):
         self.response.out.write(template.render(path, template_values))
 
 def main():
+    logging.getLogger().setLevel(logging.INFO)
     application = webapp.WSGIApplication([('/', MainHandler),
                                           ('/get', WikiAbstractness)],
-                                         debug=True)
+                                         debug=False)
     util.run_wsgi_app(application)
 
 
