@@ -1,0 +1,15 @@
+Abstractness Finder
+
+A little web app that demonstrates the principle described in xkcd.com/903 (look
+at the alt text).
+
+Written in python for Google App Engine. If you want to deploy your own instance
+just change the app name in app.yaml. It uses the URLfetch system to get pages
+from Wikipedia, BeautifulSoup to parse them and the datastore to cache the
+results. Processing the pages is expensive so the more cache hits the better.
+
+Notable files:
+
+main.py - Contains all the webapp and datastore stuff
+wiki.py - Does the URL fetching and HTML parsing
+*.html - Templates
